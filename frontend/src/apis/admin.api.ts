@@ -11,7 +11,6 @@ interface PostAdminSignupParams {
   loginId: string;
   password: string;
   adminName: string;
-  onSuccess: (response: AdminAuthResponse) => void;
 }
 
 interface GetAdminAuthProps {
@@ -43,19 +42,14 @@ export async function postAdminSignup({
   loginId,
   password,
   adminName,
-  onSuccess,
 }: PostAdminSignupParams) {
-  await apiClient.post(
-    '/admin/sign-up',
-    {
-      loginId,
-      password,
-      adminName,
-    },
-    {
-      onSuccess,
-    }
-  );
+  const response = await apiClient.post('/admin/sign-up', {
+    loginId,
+    password,
+    adminName,
+  });
+
+  return response as AdminAuthResponse;
 }
 
 export async function getAdminAuth({ onSuccess }: GetAdminAuthProps) {
