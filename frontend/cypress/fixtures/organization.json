@@ -1,0 +1,7 @@
+{
+  "data": {
+    "organizationName": "테스트 조직",
+    "totalCheeringCount": 42,
+    "categories": ["신고", "질문", "건의", "기타"]
+  }
+}
