@@ -5,7 +5,6 @@ import { ApiResponse } from '@/types/apiResponse';
 interface PostAdminLoginParams {
   loginId: string;
   password: string;
-  onSuccess: (response: AdminAuthResponse) => void;
 }
 
 interface PostAdminSignupParams {
@@ -25,18 +24,13 @@ export type AdminAuthResponse = ApiResponse<AdminAuthData>;
 export async function postAdminLogin({
   loginId,
   password,
-  onSuccess,
 }: PostAdminLoginParams) {
-  await apiClient.post(
-    '/admin/login',
-    {
-      loginId,
-      password,
-    },
-    {
-      onSuccess,
-    }
-  );
+  const response = await apiClient.post('/admin/login', {
+    loginId,
+    password,
+  });
+
+  return response as AdminAuthResponse;
 }
 
 export async function postAdminLogout(): Promise<PostAdminLogoutResponse> {
