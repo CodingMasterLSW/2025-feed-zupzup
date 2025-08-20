@@ -17,6 +17,8 @@ export function useLogout() {
       navigate('/login');
     } catch (e) {
       showErrorModal(e, '에러');
+      resetLocalStorage('auth');
+      navigate('/login');
     }
   };
 
