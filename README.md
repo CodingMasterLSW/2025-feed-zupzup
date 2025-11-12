@@ -34,10 +34,6 @@
 
 ## 🛠 기술 스택
 
-### 🌐 FrontEnd
-<img width="2048" height="775" alt="image" src="https://github.com/user-attachments/assets/f755aacb-97e2-4615-8952-4fdeed969a6e" />
-
-
 ### 🍃 BackEnd
 <img width="2048" height="416" alt="image" src="https://github.com/user-attachments/assets/90b28438-eac6-431e-92f6-3b35092d3768" />
 
@@ -45,87 +41,9 @@
 ### ⚙️ Infra
 <img width="2048" height="775" alt="image" src="https://github.com/user-attachments/assets/a70233b4-65b4-42dc-a89a-aa50858f7e64" />
 
-## 📌 Infra Design 
-
 ### BackEnd CI / CD
-<img width="1438" height="713" alt="image" src="https://github.com/user-attachments/assets/0c52c415-036e-4d93-aa04-ee3efebef8b8" />
+![피드줍줍 CICD](https://github.com/user-attachments/assets/2250fcfd-fd22-4e37-b66f-61dc9ddb06ad)
 
+### BackEnd Architecture
+![피드줍줍 인프라](https://github.com/user-attachments/assets/67f805bd-32b7-44b0-ad9a-dd041c909b4f)
 
-## 👥 멤버
-## frontend
-
-<center>
-<table  width="100%">
-  <tr>
-    <td  align="center">
-      <img  src="https://avatars.githubusercontent.com/u/122340316?v=4"  width="100px;"  alt=""/>
-    </td>
-    <td  align="center">
-      <img  src="https://avatars.githubusercontent.com/u/85238126?v=4"  width="100px;"  alt=""/>
-    </td>
-    <td  align="center">
-      <img  src="https://avatars.githubusercontent.com/u/96461334?v=4"  width="100px;"  alt=""/>
-    </td>
-  </tr>
-  <tr>
-    <td align="center">
-        <a href="https://github.com/yeongipark">
-            <div>우디(박연기)</div>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/bunju20">
-            <div>분주(황현정)</div>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/mun-kyeong">
-            <div>캉골(김문경)</div>
-        </a>
-    </td>
-  </tr>
-</table>
-</center>
-
-## backend
-
-<center>
-<table  width="100%">
-  <tr>
-    <td  align="center">
-      <img  src="https://avatars.githubusercontent.com/u/127813439?v=4"  width="100px;"  alt=""/>
-    </td>
-    <td  align="center">
-      <img  src="https://avatars.githubusercontent.com/u/83624600?v=4"  width="100px;"  alt=""/>
-    </td>
-    <td  align="center">
-      <img  src="https://avatars.githubusercontent.com/u/122284322?v=4"  width="100px;"  alt=""/>
-    </td>
-    <td  align="center">
-      <img  src="https://avatars.githubusercontent.com/u/108395670?v=4"  width="100px;"  alt=""/>
-    </td>
-  </tr>
-  <tr>
-    <td align="center">
-        <a href="https://github.com/KoSeonJe">
-            <div>웨이드(고선제)</div>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/yeong0jae">
-            <div>폰트(김영재)</div>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/phk1128">
-            <div>윌슨(박형균)</div>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/CodingMasterLSW">
-            <div>젠슨(이성우)</div>
-        </a>
-    </td>
-  </tr>
-</table>
-</center>
