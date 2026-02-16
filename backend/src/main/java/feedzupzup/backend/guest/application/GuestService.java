@@ -1,5 +1,6 @@
 package feedzupzup.backend.guest.application;
 
+import feedzupzup.backend.global.annotation.NonTransactionalRead;
 import feedzupzup.backend.global.domain.LockRepository;
 import feedzupzup.backend.global.util.CurrentDateTime;
 import feedzupzup.backend.guest.domain.guest.Guest;
@@ -22,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
 public class GuestService {
@@ -42,6 +42,7 @@ public class GuestService {
         guestRepository.save(guest);
     }
 
+    @NonTransactionalRead
     public MyFeedbackListResponse getMyFeedbackPage(
             final UUID organizationUuid,
             final GuestInfo guestInfo
@@ -51,6 +52,7 @@ public class GuestService {
         return MyFeedbackListResponse.fromHistory(writeHistories);
     }
 
+    @NonTransactionalRead
     public LikeHistoryResponse findGuestLikeHistories(
             final UUID organizationUuid,
             final GuestInfo guestInfo
@@ -60,6 +62,7 @@ public class GuestService {
         return LikeHistoryResponse.from(likeHistories);
     }
 
+    @NonTransactionalRead
     public boolean isSavedGuest(final UUID guestUuid) {
         return guestRepository.existsByGuestUuid(guestUuid);
     }

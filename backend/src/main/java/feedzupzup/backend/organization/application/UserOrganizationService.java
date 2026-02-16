@@ -1,5 +1,6 @@
 package feedzupzup.backend.organization.application;
 
+import feedzupzup.backend.global.annotation.NonTransactionalRead;
 import feedzupzup.backend.global.exception.ResourceException.ResourceNotFoundException;
 import feedzupzup.backend.organization.domain.Organization;
 import feedzupzup.backend.organization.domain.OrganizationRepository;
@@ -13,11 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class UserOrganizationService {
 
     private final OrganizationRepository organizationRepository;
 
+    @NonTransactionalRead
     public UserOrganizationResponse getOrganizationByUuid(final UUID organizationUuid) {
         final Organization organization = organizationRepository.findByUuid(organizationUuid)
                 .orElseThrow(() -> new ResourceNotFoundException(

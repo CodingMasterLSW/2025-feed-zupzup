@@ -8,9 +8,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface AdminRepository extends JpaRepository<Admin, Long> {
+
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    Optional<Admin> findById(Long id);
 
     Optional<Admin> findByLoginId(final LoginId loginId);
 

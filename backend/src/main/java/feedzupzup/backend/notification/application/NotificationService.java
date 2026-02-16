@@ -2,6 +2,7 @@ package feedzupzup.backend.notification.application;
 
 import feedzupzup.backend.admin.domain.Admin;
 import feedzupzup.backend.admin.domain.AdminRepository;
+import feedzupzup.backend.global.annotation.NonTransactionalRead;
 import feedzupzup.backend.global.exception.ResourceException.ResourceNotFoundException;
 import feedzupzup.backend.notification.domain.Notification;
 import feedzupzup.backend.notification.domain.NotificationRepository;
@@ -15,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class NotificationService {
 
@@ -31,6 +31,7 @@ public class NotificationService {
                 );
     }
 
+    @NonTransactionalRead
     public AlertsSettingResponse getAlertsSetting(final Long adminId) {
         final Admin admin = getAdminById(adminId);
         return AlertsSettingResponse.from(admin.isAlertsOn());
