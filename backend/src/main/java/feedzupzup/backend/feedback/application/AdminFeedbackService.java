@@ -29,6 +29,7 @@ import feedzupzup.backend.feedback.dto.response.FeedbackItem;
 import feedzupzup.backend.feedback.dto.response.UpdateFeedbackCommentResponse;
 import feedzupzup.backend.feedback.exception.FeedbackException.DownloadJobNotCompletedException;
 import feedzupzup.backend.feedback.exception.FeedbackException.DownloadUrlNotGeneratedException;
+import feedzupzup.backend.global.annotation.NonTransactionalRead;
 import feedzupzup.backend.global.exception.ResourceException.ResourceNotFoundException;
 import feedzupzup.backend.global.log.BusinessActionLog;
 import feedzupzup.backend.organization.domain.OrganizationRepository;
@@ -48,7 +49,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class AdminFeedbackService {
 
     private final AdminRepository adminRepository;
@@ -93,6 +93,7 @@ public class AdminFeedbackService {
         );
     }
 
+    @NonTransactionalRead
     public AdminFeedbackListResponse getFeedbackPage(
             final UUID organizationUuid,
             final int size,
@@ -154,6 +155,7 @@ public class AdminFeedbackService {
         feedBackRepository.deleteAllByOrganizationId(organizationId);
     }
 
+    @NonTransactionalRead
     public ClustersResponse getTopClusters(final UUID organizationUuid, final int limit) {
         if (!organizationRepository.existsOrganizationByUuid(organizationUuid)) {
             throw new ResourceNotFoundException("해당 organizationUuid(uuid = " + organizationUuid + ")로 찾을 수 없습니다.");
@@ -163,6 +165,7 @@ public class AdminFeedbackService {
         return ClustersResponse.from(clusterInfos);
     }
 
+    @NonTransactionalRead
     public ClusterFeedbacksResponse getFeedbacksByClusterId(final Long clusterId) {
         final EmbeddingCluster embeddingCluster = embeddingClusterRepository.findById(clusterId)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 clusterid(id = " + clusterId + ")로 찾을 수 없습니다."));
@@ -184,6 +187,7 @@ public class AdminFeedbackService {
         return job.getJobId();
     }
 
+    @NonTransactionalRead
     public FeedbackDownloadJob getDownloadJobStatus(final String jobId) {
         final FeedbackDownloadJob job = feedbackDownloadJobStore.getById(jobId);
         if (job == null) {
@@ -192,6 +196,7 @@ public class AdminFeedbackService {
         return job;
     }
 
+    @NonTransactionalRead
     public String getDownloadUrl(final String jobId) {
         final FeedbackDownloadJob job = feedbackDownloadJobStore.getById(jobId);
         if (job == null) {

@@ -4,6 +4,7 @@ import feedzupzup.backend.admin.domain.Admin;
 import feedzupzup.backend.admin.domain.AdminRepository;
 import feedzupzup.backend.category.application.OrganizationCategoryService;
 import feedzupzup.backend.feedback.application.AdminFeedbackService;
+import feedzupzup.backend.global.annotation.NonTransactionalRead;
 import feedzupzup.backend.global.exception.ResourceException.ResourceNotFoundException;
 import feedzupzup.backend.organization.domain.AdminOrganizationInfo;
 import feedzupzup.backend.organization.domain.Organization;
@@ -30,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class AdminOrganizationService {
 
     private final OrganizationRepository organizationRepository;
@@ -71,6 +71,7 @@ public class AdminOrganizationService {
         return AdminCreateOrganizationResponse.from(savedOrganization);
     }
 
+    @NonTransactionalRead
     public List<AdminInquireOrganizationResponse> getOrganizationsInfo(final Long adminId) {
         final Admin admin = findAdminBy(adminId);
         final List<AdminOrganizationInfo> adminOrganizationInfos = organizationRepository.getAdminOrganizationInfos(

@@ -1,5 +1,6 @@
 package feedzupzup.backend.qr.service;
 
+import feedzupzup.backend.global.annotation.NonTransactionalRead;
 import feedzupzup.backend.global.exception.ResourceException.ResourceExistsException;
 import feedzupzup.backend.global.exception.ResourceException.ResourceNotFoundException;
 import feedzupzup.backend.organization.domain.Organization;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class QRService {
 
@@ -31,6 +31,7 @@ public class QRService {
     private final SiteUrl siteUrl;
     private final QRProperties qrProperties;
 
+    @NonTransactionalRead
     public QRResponse getQRCode(final UUID organizationUuid) {
         final Organization organization = getOrganization(organizationUuid);
         final QR qr = getQr(organization);
@@ -62,6 +63,7 @@ public class QRService {
         qrRepository.save(new QR(imageUrl, organization));
     }
 
+    @NonTransactionalRead
     public QRDownloadUrlResponse getDownloadUrl(final UUID organizationUuid) {
         final Organization organization = getOrganization(organizationUuid);
         final QR qr = getQr(organization);

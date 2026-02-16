@@ -1,5 +1,6 @@
 package feedzupzup.backend.organization.application;
 
+import feedzupzup.backend.global.annotation.NonTransactionalRead;
 import feedzupzup.backend.global.exception.ResourceException.ResourceNotFoundException;
 import feedzupzup.backend.organization.domain.FeedbackAmount;
 import feedzupzup.backend.organization.domain.Organization;
@@ -14,12 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class OrganizationStatisticService {
 
     private final OrganizationRepository organizationRepository;
     private final OrganizationStatisticRepository organizationStatisticRepository;
 
+    @NonTransactionalRead
     public OrganizationStatisticResponse getStatistic(final UUID organizationUuid) {
         final Organization organization = findOrganizationBy(organizationUuid);
         final FeedbackAmount feedbackAmount = organizationStatisticRepository.findFeedbackAmountByOrganizationId(organization.getId());
