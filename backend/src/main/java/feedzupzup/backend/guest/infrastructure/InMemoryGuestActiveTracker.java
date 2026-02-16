@@ -1,7 +1,7 @@
 package feedzupzup.backend.guest.infrastructure;
 
 import feedzupzup.backend.guest.domain.guest.GuestActiveTracker;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -26,7 +26,7 @@ public class InMemoryGuestActiveTracker implements GuestActiveTracker {
     }
 
     @Override
-    public void removeAll(Set<UUID> processedGuests) {
+    public void removeAll(Collection<UUID> processedGuests) {
         todayActiveGuests.removeAll(processedGuests);
     }
 
