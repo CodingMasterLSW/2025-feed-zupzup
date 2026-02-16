@@ -38,12 +38,13 @@ public class GuestScheduler {
 
     }
 
-    private void randomDelay(long maxMillis)  {
+    private void randomDelay(final long maxMillis)  {
         long delay = ThreadLocalRandom.current().nextLong(maxMillis);
         try {
             Thread.sleep(delay);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            log.warn("스케줄러 랜덤 지연 중 인터럽트 발생", e);
+            Thread.currentThread().interrupt();
         }
     }
 }
