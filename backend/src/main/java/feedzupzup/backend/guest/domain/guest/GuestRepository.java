@@ -21,7 +21,7 @@ public interface GuestRepository extends JpaRepository<Guest, Long> {
     @Modifying
     @Query("UPDATE Guest g SET g.connectedTime = :time WHERE g.guestUuid IN :ids")
     int updateConnectedTimeForGuests(
-            @Param("ids") Set<UUID> ids,
+            @Param("ids") List<UUID> ids,
             @Param("time") LocalDateTime time
     );
 

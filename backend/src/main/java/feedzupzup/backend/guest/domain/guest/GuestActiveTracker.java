@@ -1,5 +1,6 @@
 package feedzupzup.backend.guest.domain.guest;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 
@@ -9,7 +10,7 @@ public interface GuestActiveTracker {
 
     Set<UUID> getTodayActiveGuests();
 
-    void removeAll(Set<UUID> guests);
+    void removeAll(Collection<UUID> guests);
 
     void clear();
 }
