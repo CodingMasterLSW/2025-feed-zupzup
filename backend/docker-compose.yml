@@ -9,3 +9,9 @@ services:
       - ./mysql/data:/var/lib/mysql
     ports:
       - "33061:3306"
+
+  feed-zupzup-redis:
+    image: redis:7
+    container_name: feed-zupzup-redis
+    ports:
+      - "6379:6379"
