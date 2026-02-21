@@ -87,19 +87,20 @@ dependencies {
     implementation 'io.github.vaneproject:vane-badwordfiltering:1.0.0'
 }
 
-tasks.register('copySecret', Copy) {
-    mustRunAfter copySecretAlloy
-    from file('./backend-submodule/main')
-    include 'application*.yml'
-    into 'src/main/resources'
-}
+// submodule에서 yml 복사하지 않고 src/main/resources의 yml 직접 사용
+//tasks.register('copySecret', Copy) {
+//    mustRunAfter copySecretAlloy
+//    from file('./backend-submodule/main')
+//    include 'application*.yml'
+//    into 'src/main/resources'
+//}
 
-tasks.register('copySecretTest', Copy) {
-    mustRunAfter copySecretAlloy
-    from file('./backend-submodule/test')
-    include 'application*.yml'
-    into 'src/test/resources'
-}
+//tasks.register('copySecretTest', Copy) {
+//    mustRunAfter copySecretAlloy
+//    from file('./backend-submodule/test')
+//    include 'application*.yml'
+//    into 'src/test/resources'
+//}
 
 tasks.register('copySecretAlloy', Copy) {
     from file('./backend-submodule/alloy')
@@ -114,11 +115,10 @@ tasks.register('copyFirebaseServiceKey', Copy) {
     into 'src/main/resources/firebase'
 }
 
-compileJava.dependsOn copySecret, copySecretTest, copySecretAlloy, copyFirebaseServiceKey
-processResources.dependsOn copySecret, copySecretAlloy, copyFirebaseServiceKey
-processTestResources.dependsOn copySecretTest
+compileJava.dependsOn copySecretAlloy, copyFirebaseServiceKey
+processResources.dependsOn copySecretAlloy, copyFirebaseServiceKey
 
 test {
     useJUnitPlatform()
-    dependsOn copySecretTest, copyFirebaseServiceKey
+    dependsOn copyFirebaseServiceKey
 }
