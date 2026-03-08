@@ -24,6 +24,7 @@ repositories {
 }
 
 dependencies {
+    implementation platform('io.awspring.cloud:spring-cloud-aws-dependencies:3.4.1')
 
     //develop tool
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -42,6 +43,7 @@ dependencies {
     implementation 'org.springframework.session:spring-session-jdbc'
 
     //aws
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter'
     implementation 'software.amazon.awssdk:s3:2.30.16'
 
     //QR
@@ -65,7 +67,7 @@ dependencies {
 
     //metric
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'io.micrometer:micrometer-registry-cloudwatch2'
 
     //log
     implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
