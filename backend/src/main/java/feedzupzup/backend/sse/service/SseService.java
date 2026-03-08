@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -99,6 +101,23 @@ public class SseService {
         }
         log.info("피드백 수 전송 완료 - Organization: {}, 성공: {}, 실패: {}",
                 organizationId, successCount, failCount);
+    }
+
+    @EventListener(ContextClosedEvent.class)
+    public void completeAllEmitters() {
+        final Map<String, SseEmitter> allEmitters = sseEmitterRepository.findAll();
+        log.info("SSE 연결 전체 해제 시작 - {} 개", allEmitters.size());
+
+        for (String key : allEmitters.keySet()) {
+            final SseEmitter emitter = allEmitters.get(key);
+            try {
+                emitter.complete();
+            } catch (Exception e) {
+                log.debug("이미 끊긴 SSE 연결 - {}: {}", key, e.getMessage());
+            }
+            sseEmitterRepository.remove(key);
+        }
+        log.info("SSE 연결 전체 해제 완료");
     }
 
     private void sendToClient(final SseEmitter emitter, final String id, final String eventName, final Object data) {
