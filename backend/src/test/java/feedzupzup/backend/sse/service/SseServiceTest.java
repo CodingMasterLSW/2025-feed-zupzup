@@ -3,6 +3,7 @@ package feedzupzup.backend.sse.service;
 import static feedzupzup.backend.category.domain.Category.SUGGESTION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import feedzupzup.backend.category.domain.OrganizationCategory;
 import feedzupzup.backend.category.domain.OrganizationCategoryRepository;
@@ -195,6 +196,54 @@ class SseServiceTest extends ServiceIntegrationHelper {
                         () -> assertThat(emitter2.getTimeout()).isEqualTo(Long.MAX_VALUE)
                 );
             }
+        }
+    }
+
+    @Nested
+    @DisplayName("Emitter 전체 해제 테스트")
+    class CompleteAllEmittersTest {
+
+        @Test
+        @DisplayName("모든 emitter가 complete 되고 리포지토리에서 제거된다")
+        void completeAllEmitters_removesAllFromRepository() {
+            // given
+            final UUID organizationUuid = organization.getUuid();
+            sseService.createEmitter(organizationUuid, UUID.randomUUID().toString(), ConnectionType.GUEST);
+            sseService.createEmitter(organizationUuid, UUID.randomUUID().toString(), ConnectionType.GUEST);
+            sseService.createEmitter(organizationUuid, UUID.randomUUID().toString(), ConnectionType.ADMIN);
+            assertThat(sseEmitterRepository.count()).isEqualTo(3);
+
+            // when
+            sseService.completeAllEmitters();
+
+            // then
+            assertThat(sseEmitterRepository.count()).isEqualTo(0);
+        }
+
+        @Test
+        @DisplayName("이미 끊긴 연결이 있어도 예외 없이 나머지 emitter를 정상 해제한다")
+        void completeAllEmitters_withAlreadyCompletedEmitter_doesNotThrow() {
+            // given
+            final UUID organizationUuid = organization.getUuid();
+            final SseEmitter alreadyClosed = sseService.createEmitter(organizationUuid, UUID.randomUUID().toString(), ConnectionType.GUEST);
+            sseService.createEmitter(organizationUuid, UUID.randomUUID().toString(), ConnectionType.GUEST);
+            alreadyClosed.complete();
+
+            // when
+            assertDoesNotThrow(() -> sseService.completeAllEmitters());
+
+            // then
+            assertThat(sseEmitterRepository.count()).isEqualTo(0);
+        }
+
+        @Test
+        @DisplayName("연결된 emitter가 없을 때 호출해도 예외가 발생하지 않는다")
+        void completeAllEmitters_withNoEmitters_doesNotThrow() {
+            // given
+            assertThat(sseEmitterRepository.count()).isEqualTo(0);
+
+            // when & then
+            assertDoesNotThrow(() -> sseService.completeAllEmitters());
         }
     }
 }
