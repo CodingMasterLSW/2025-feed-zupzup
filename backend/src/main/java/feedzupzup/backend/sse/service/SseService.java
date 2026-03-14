@@ -5,11 +5,13 @@ import feedzupzup.backend.organization.domain.Organization;
 import feedzupzup.backend.organization.domain.OrganizationRepository;
 import feedzupzup.backend.sse.domain.ConnectionType;
 import feedzupzup.backend.sse.domain.SseEmitterRepository;
+import feedzupzup.backend.sse.event.SseConnectedEvent;
 import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -21,14 +23,17 @@ public class SseService {
 
     private final SseEmitterRepository sseEmitterRepository;
     private final OrganizationRepository organizationRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public SseService(
             @Qualifier("inMemorySseEmitterRepository")
             final SseEmitterRepository sseEmitterRepository,
-            final OrganizationRepository organizationRepository
+            final OrganizationRepository organizationRepository,
+            final ApplicationEventPublisher eventPublisher
     ) {
         this.sseEmitterRepository = sseEmitterRepository;
         this.organizationRepository = organizationRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     public SseEmitter createEmitter(
@@ -44,6 +49,7 @@ public class SseService {
 
         sseEmitterRepository.save(emitterId, emitter);
         log.info("SSE 연결 생성 - Type: {}, Emitter ID: {}", connectionType, emitterId);
+        eventPublisher.publishEvent(new SseConnectedEvent(connectionType));
 
         emitter.onCompletion(() -> {
             log.info("SSE 연결 정상 종료 - {}", emitterId);
