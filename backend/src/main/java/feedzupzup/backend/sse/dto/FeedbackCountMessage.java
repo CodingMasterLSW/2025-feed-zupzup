@@ -2,7 +2,8 @@ package feedzupzup.backend.sse.dto;
 
 public record FeedbackCountMessage(
         Long organizationId,
-        long totalFeedbackCount
+        long totalFeedbackCount,
+        String eventId,
+        long publishedAt
 ) {
-
 }

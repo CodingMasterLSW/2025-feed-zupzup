@@ -18,10 +18,7 @@ public class RedisSseSubscriber {
     public void handleMessage(final String message) {
         try {
             final FeedbackCountMessage feedbackCountMessage = objectMapper.readValue(message, FeedbackCountMessage.class);
-            sseService.sendFeedbackNotificationToOrganization(
-                    feedbackCountMessage.organizationId(),
-                    feedbackCountMessage.totalFeedbackCount()
-            );
+            sseService.sendFeedbackNotificationToOrganization(feedbackCountMessage);
         } catch (Exception e) {
             log.error("Redis 메시지 처리 실패 - message: {}", message, e);
         }

@@ -29,6 +29,7 @@ import feedzupzup.backend.guest.domain.write.WriteHistoryRepository;
 import feedzupzup.backend.guest.dto.GuestInfo;
 import feedzupzup.backend.organization.domain.Organization;
 import feedzupzup.backend.organization.domain.OrganizationRepository;
+import feedzupzup.backend.organization.domain.FeedbackAmount;
 import feedzupzup.backend.organization.domain.OrganizationStatisticRepository;
 import java.util.List;
 import java.util.UUID;
@@ -78,6 +79,8 @@ public class UserFeedbackService {
                 CREATED_WAITING.getConfirmedAmount(),
                 CREATED_WAITING.getWaitingAmount()
         );
+        final FeedbackAmount feedbackAmount = organizationStatisticRepository.findFeedbackAmountByOrganizationId(
+                organization.getId());
 
         // 새로운 피드백이 생성되면 이벤트 발행
         eventPublisher.publishEvent(new FeedbackCreatedEvent(organization.getId(), "피드줍줍"));
@@ -85,7 +88,10 @@ public class UserFeedbackService {
         eventPublisher.publishEvent(new FeedbackCreatedEvent2(savedFeedback.getId()));
 
         // 현재 피드백 개수를, 접속해있는 유저에게 알려주는 이벤트 발행
-        eventPublisher.publishEvent(new OrganizationFeedbackCountEvent(organization.getId()));
+        eventPublisher.publishEvent(OrganizationFeedbackCountEvent.of(
+                organization.getId(),
+                feedbackAmount.getFeedbackTotalCount()
+        ));
 
         return CreateFeedbackResponse.from(savedFeedback);
     }

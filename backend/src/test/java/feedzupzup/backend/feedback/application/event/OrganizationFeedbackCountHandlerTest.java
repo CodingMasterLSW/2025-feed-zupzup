@@ -1,7 +1,9 @@
 package feedzupzup.backend.feedback.application.event;
 
 import static feedzupzup.backend.category.domain.Category.SUGGESTION;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
@@ -11,6 +13,7 @@ import feedzupzup.backend.category.fixture.OrganizationCategoryFixture;
 import feedzupzup.backend.config.ServiceIntegrationHelper;
 import feedzupzup.backend.feedback.application.UserFeedbackService;
 import feedzupzup.backend.feedback.dto.request.CreateFeedbackRequest;
+import feedzupzup.backend.global.message.MessagePublisher;
 import feedzupzup.backend.global.util.CurrentDateTime;
 import feedzupzup.backend.guest.domain.guest.Guest;
 import feedzupzup.backend.guest.domain.guest.GuestRepository;
@@ -20,7 +23,7 @@ import feedzupzup.backend.organization.domain.OrganizationRepository;
 import feedzupzup.backend.organization.domain.OrganizationStatistic;
 import feedzupzup.backend.organization.domain.OrganizationStatisticRepository;
 import feedzupzup.backend.organization.fixture.OrganizationFixture;
-import feedzupzup.backend.sse.service.SseService;
+import feedzupzup.backend.sse.dto.FeedbackCountMessage;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -46,7 +49,7 @@ class OrganizationFeedbackCountHandlerTest extends ServiceIntegrationHelper {
     private GuestRepository guestRepository;
 
     @MockitoBean
-    private SseService sseService;
+    private MessagePublisher messagePublisher;
 
     private Organization organization;
     private OrganizationCategory organizationCategory;
@@ -85,10 +88,10 @@ class OrganizationFeedbackCountHandlerTest extends ServiceIntegrationHelper {
         userFeedbackService.create(request, organization.getUuid(), guestInfo);
 
         // then - SSE 알림이 발송되었는지 검증 (비동기 처리를 위해 timeout 사용)
-        verify(sseService, timeout(2000).times(1))
-                .sendFeedbackNotificationToOrganization(
-                        eq(organization.getId()),
-                        eq(1L)
+        verify(messagePublisher, timeout(2000).times(1))
+                .publish(
+                        eq("sse:feedback-count"),
+                        argThat(argument -> hasExpectedFeedbackCountMessage(argument, 1L))
                 );
     }
 
@@ -98,30 +101,29 @@ class OrganizationFeedbackCountHandlerTest extends ServiceIntegrationHelper {
         // given
         final GuestInfo guestInfo = new GuestInfo(guest.getGuestUuid());
 
-        // when - 3개의 피드백 생성
         userFeedbackService.create(
                 new CreateFeedbackRequest("피드백 1", false, "작성자1", SUGGESTION.getKoreanName(), null),
                 organization.getUuid(),
                 guestInfo
         );
+        verify(messagePublisher, timeout(2000).times(1))
+                .publish(eq("sse:feedback-count"), argThat(argument -> hasExpectedFeedbackCountMessage(argument, 1L)));
+
         userFeedbackService.create(
                 new CreateFeedbackRequest("피드백 2", false, "작성자2", SUGGESTION.getKoreanName(), null),
                 organization.getUuid(),
                 guestInfo
         );
+        verify(messagePublisher, timeout(2000).times(1))
+                .publish(eq("sse:feedback-count"), argThat(argument -> hasExpectedFeedbackCountMessage(argument, 2L)));
+
         userFeedbackService.create(
                 new CreateFeedbackRequest("피드백 3", false, "작성자3", SUGGESTION.getKoreanName(), null),
                 organization.getUuid(),
                 guestInfo
         );
-
-        // then - 각 피드백 생성마다 SSE 알림이 발송되었는지 검증
-        verify(sseService, timeout(2000).times(1))
-                .sendFeedbackNotificationToOrganization(eq(organization.getId()), eq(1L));
-        verify(sseService, timeout(2000).times(1))
-                .sendFeedbackNotificationToOrganization(eq(organization.getId()), eq(2L));
-        verify(sseService, timeout(2000).times(1))
-                .sendFeedbackNotificationToOrganization(eq(organization.getId()), eq(3L));
+        verify(messagePublisher, timeout(2000).times(1))
+                .publish(eq("sse:feedback-count"), argThat(argument -> hasExpectedFeedbackCountMessage(argument, 3L)));
     }
 
     @Test
@@ -141,10 +143,21 @@ class OrganizationFeedbackCountHandlerTest extends ServiceIntegrationHelper {
         userFeedbackService.create(request, organization.getUuid(), guestInfo);
 
         // then - 정확한 organizationUuid와 totalCount로 SSE 알림이 발송되었는지 검증
-        verify(sseService, timeout(2000).times(1))
-                .sendFeedbackNotificationToOrganization(
-                        eq(organization.getId()),
-                        eq(1L)
+        verify(messagePublisher, timeout(2000).times(1))
+                .publish(
+                        eq("sse:feedback-count"),
+                        argThat(argument -> hasExpectedFeedbackCountMessage(argument, 1L))
                 );
+    }
+
+    private boolean hasExpectedFeedbackCountMessage(final Object argument, final long expectedFeedbackCount) {
+        assertThat(argument).isInstanceOf(FeedbackCountMessage.class);
+
+        final FeedbackCountMessage message = (FeedbackCountMessage) argument;
+        assertThat(message.organizationId()).isEqualTo(organization.getId());
+        assertThat(message.totalFeedbackCount()).isEqualTo(expectedFeedbackCount);
+        assertThat(message.eventId()).isNotBlank();
+        assertThat(message.publishedAt()).isPositive();
+        return true;
     }
 }

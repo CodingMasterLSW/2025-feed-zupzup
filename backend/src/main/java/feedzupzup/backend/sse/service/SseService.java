@@ -5,6 +5,7 @@ import feedzupzup.backend.organization.domain.Organization;
 import feedzupzup.backend.organization.domain.OrganizationRepository;
 import feedzupzup.backend.sse.domain.ConnectionType;
 import feedzupzup.backend.sse.domain.SseEmitterRepository;
+import feedzupzup.backend.sse.dto.FeedbackCountMessage;
 import feedzupzup.backend.sse.event.SseConnectedEvent;
 import java.io.IOException;
 import java.util.Map;
@@ -76,7 +77,8 @@ public class SseService {
         return emitter;
     }
 
-    public void sendFeedbackNotificationToOrganization(final Long organizationId, final long totalFeedbackCount) {
+    public void sendFeedbackNotificationToOrganization(final FeedbackCountMessage feedbackCountMessage) {
+        final Long organizationId = feedbackCountMessage.organizationId();
         final Map<String, SseEmitter> sseEmitters = sseEmitterRepository.findAllByOrganizationId(
                 organizationId);
         log.info("피드백 수 전송 시작 - Organization: {}", organizationId);
@@ -96,8 +98,9 @@ public class SseService {
 
             try {
                 emitter.send(SseEmitter.event()
+                        .id(feedbackCountMessage.eventId())
                         .name("feedback-total-count-notification")
-                        .data(totalFeedbackCount));
+                        .data(feedbackCountMessage));
                 successCount ++;
             } catch (IOException e) {
                 log.warn("피드백 수 전송 실패 - Emitter: {}, 원인: {}", emitterId, e.getMessage());
