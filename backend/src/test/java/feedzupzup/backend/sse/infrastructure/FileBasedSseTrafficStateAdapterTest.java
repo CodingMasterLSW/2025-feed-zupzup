@@ -26,15 +26,17 @@ class FileBasedSseTrafficStateAdapterTest {
                 missingFilePath.toString()
         );
 
+        assertThat(stateReader.read().deploymentColor()).isEqualTo(SseTrafficState.UNKNOWN);
         assertThat(stateReader.shouldNotReceiveSse()).isFalse();
     }
 
     @Test
-    @DisplayName("상태 파일의 shouldNotReceiveSse 값을 읽는다")
+    @DisplayName("상태 파일의 배포 색상과 shouldNotReceiveSse 값을 읽는다")
     void readShouldNotReceiveSseFromStateFile() throws IOException {
         final Path stateFilePath = tempDir.resolve("deploy-state.json");
         Files.writeString(stateFilePath, """
                 {
+                  "deploymentColor": "blue",
                   "shouldNotReceiveSse": true
                 }
                 """);
@@ -43,7 +45,9 @@ class FileBasedSseTrafficStateAdapterTest {
                 stateFilePath.toString()
         );
 
-        assertThat(stateReader.shouldNotReceiveSse()).isTrue();
+        final SseTrafficState trafficState = stateReader.read();
+        assertThat(trafficState.deploymentColor()).isEqualTo(SseTrafficState.BLUE);
+        assertThat(trafficState.shouldNotReceiveSse()).isTrue();
     }
 
     @Test
@@ -56,6 +60,7 @@ class FileBasedSseTrafficStateAdapterTest {
                 stateFilePath.toString()
         );
 
+        assertThat(stateReader.read().deploymentColor()).isEqualTo(SseTrafficState.UNKNOWN);
         assertThat(stateReader.shouldNotReceiveSse()).isFalse();
     }
 }

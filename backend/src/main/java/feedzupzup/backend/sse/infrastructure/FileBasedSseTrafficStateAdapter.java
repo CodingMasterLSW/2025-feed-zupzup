@@ -27,10 +27,6 @@ public class FileBasedSseTrafficStateAdapter implements SseTrafficStatePort {
     }
 
     @Override
-    public boolean shouldNotReceiveSse() {
-        return read().shouldNotReceiveSse();
-    }
-
     public SseTrafficState read() {
         if (!Files.exists(stateFilePath)) {
             return SseTrafficState.allowSse();
