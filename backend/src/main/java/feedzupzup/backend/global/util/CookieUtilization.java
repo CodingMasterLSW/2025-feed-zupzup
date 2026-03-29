@@ -16,20 +16,17 @@ public class CookieUtilization {
 
     public static final String GUEST_KEY = "guestId";
 
-    private final String cookieDomain;
     private final String sameSite;
     private final long maxAge;
     private final String path;
     private final boolean secure;
 
     public CookieUtilization(
-            @Value("${cookie.domain}") final String cookieDomain,
             @Value("${cookie.sameSite}") final String sameSite,
             @Value("${cookie.max-age}") final long maxAge,
             @Value("${cookie.path}") final String path,
             @Value("${cookie.secure}") final boolean secure
     ) {
-        this.cookieDomain = cookieDomain;
         this.sameSite = sameSite;
         this.maxAge = maxAge;
         this.path = path;
@@ -39,7 +36,6 @@ public class CookieUtilization {
     public ResponseCookie createCookie(String key, UUID value) {
         final ResponseCookie responseCookie = ResponseCookie.from(key, value.toString())
                 .httpOnly(true)
-                .domain(cookieDomain)
                 .sameSite(sameSite)
                 .maxAge(maxAge)
                 .path(path)
