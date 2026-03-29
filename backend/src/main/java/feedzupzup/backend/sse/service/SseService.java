@@ -4,9 +4,11 @@ import feedzupzup.backend.global.exception.ResourceException.ResourceNotFoundExc
 import feedzupzup.backend.organization.domain.Organization;
 import feedzupzup.backend.organization.domain.OrganizationRepository;
 import feedzupzup.backend.sse.domain.ConnectionType;
+import feedzupzup.backend.sse.domain.SseAcceptingStatus;
 import feedzupzup.backend.sse.domain.SseEmitterRepository;
 import feedzupzup.backend.sse.dto.FeedbackCountMessage;
 import feedzupzup.backend.sse.event.SseConnectedEvent;
+import feedzupzup.backend.sse.exception.SseException.SseConnectionRefusedException;
 import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
@@ -25,16 +27,19 @@ public class SseService {
     private final SseEmitterRepository sseEmitterRepository;
     private final OrganizationRepository organizationRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final SseAcceptingStatus sseAcceptingStatus;
 
     public SseService(
             @Qualifier("inMemorySseEmitterRepository")
             final SseEmitterRepository sseEmitterRepository,
             final OrganizationRepository organizationRepository,
-            final ApplicationEventPublisher eventPublisher
+            final ApplicationEventPublisher eventPublisher,
+            final SseAcceptingStatus sseAcceptingStatus
     ) {
         this.sseEmitterRepository = sseEmitterRepository;
         this.organizationRepository = organizationRepository;
         this.eventPublisher = eventPublisher;
+        this.sseAcceptingStatus = sseAcceptingStatus;
     }
 
     public SseEmitter createEmitter(
@@ -42,6 +47,9 @@ public class SseService {
             final String userId,
             final ConnectionType connectionType
     ) {
+        if (!sseAcceptingStatus.isAcceptStatus()) {
+            throw new SseConnectionRefusedException("현재 SSE 연결을 받을 수 없는 상태입니다.");
+        }
         final SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
         final Organization organization = organizationRepository.findByUuid(organizationUuid)
                 .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 조직 UUID 입니다."));
@@ -112,8 +120,13 @@ public class SseService {
                 organizationId, successCount, failCount);
     }
 
+    public void resumeAccepting() {
+        sseAcceptingStatus.resumeAccepting();
+    }
+
     @EventListener(ContextClosedEvent.class)
     public void completeAllEmitters() {
+        sseAcceptingStatus.stopAccepting();
         final Map<String, SseEmitter> allEmitters = sseEmitterRepository.findAll();
         log.info("SSE 연결 전체 해제 시작 - {} 개", allEmitters.size());
 
