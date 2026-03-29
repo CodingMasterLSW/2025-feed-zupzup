@@ -6,6 +6,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -13,21 +14,21 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class InternalFilter extends OncePerRequestFilter {
 
     private static final String INTERNAL_PATH_PREFIX = "/internal/";
-    private static final String LOCALHOST_IPV4 = "127.0.0.1";
-    private static final String LOCALHOST_IPV6 = "0:0:0:0:0:0:0:1";
+
+    @Value("${internal.secret-key}")
+    private String secretKey;
 
     @Override
     protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain)
             throws ServletException, IOException {
-        if (request.getRequestURI().startsWith(INTERNAL_PATH_PREFIX) && !isLocalhost(request)) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
-            return;
+        if (request.getRequestURI().startsWith(INTERNAL_PATH_PREFIX)) {
+            final String requestKey = request.getHeader("X-Internal-Key");
+            if (!secretKey.equals(requestKey)) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
         }
         filterChain.doFilter(request, response);
     }
 
-    private boolean isLocalhost(final HttpServletRequest request) {
-        final String remoteAddr = request.getRemoteAddr();
-        return LOCALHOST_IPV4.equals(remoteAddr) || LOCALHOST_IPV6.equals(remoteAddr);
-    }
 }
