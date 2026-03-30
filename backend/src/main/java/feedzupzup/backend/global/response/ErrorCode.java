@@ -4,6 +4,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import lombok.Getter;
@@ -68,6 +69,9 @@ public enum ErrorCode {
     S3_UPLOAD_FAILED(INTERNAL_SERVER_ERROR, "S01", "파일 업로드에 실패하였습니다."),
     S3_PRESIGNED_FAILED(INTERNAL_SERVER_ERROR, "S02", "Presigned URL 생성에 실패하였습니다."),
     S3_DOWNLOAD_FAILED(INTERNAL_SERVER_ERROR, "S03", "파일 다운로드에 실패하였습니다."),
+
+    //SSE Error
+    SSE_CONNECTION_REFUSED(SERVICE_UNAVAILABLE, "SSE01", "현재 SSE 연결을 받을 수 없습니다."),
 
     //Poi Excel Error
     POI_EXCEL_EXPORT_FAIL(INTERNAL_SERVER_ERROR, "E01", "엑셀 파일 생성에 실패하였습니다.");
